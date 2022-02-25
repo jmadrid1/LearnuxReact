@@ -5,7 +5,7 @@ import VideoList from './components/videoList/VideoList';
 import 'firebase/database';
 import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, onValue } from "firebase/database";
-import firebaseConfig from './Firebase';
+import firebaseConfig from './data_source/Firebase';
 
 export default function App() {
   const [videos, setVideos] = useState([]);

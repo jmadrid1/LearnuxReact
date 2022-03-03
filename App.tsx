@@ -1,7 +1,7 @@
-import { StyleSheet, View } from 'react-native';
+import { FlatList, StyleSheet, View, StatusBar } from 'react-native';
 import { useState, useEffect } from 'react';
+import VideoRow from './components/videoRow/VideoRow';
 import { Video } from './types/Video';
-import VideoList from './components/videoList/VideoList';
 import 'firebase/database';
 import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, onValue } from "firebase/database";
@@ -9,6 +9,7 @@ import firebaseConfig from './data_source/Firebase';
 
 export default function App() {
   const [videos, setVideos] = useState([]);
+  const [isLoading, setLoading] = useState(true)
 
   useEffect(() => {
     getVideos();
@@ -40,22 +41,47 @@ export default function App() {
         videoList.push(video)
       }
       setVideos(videoList)
+      setLoading(false)
     });
   }
 
-  return (
-    <View style={styles.container}>
-      <VideoList videos={videos}></VideoList>
+  const renderVideos = ({ item }) => {
+    return (
+      <View style={styles.videoContainer} key={item.id}>
+        <VideoRow video={item} />
+      </View>
+    );
+  };
 
-    </View>
-  );
+  if(!isLoading){
+    return (
+      <View style={styles.container}>
+        <FlatList
+          horizontal={false}
+          data={videos}
+          renderItem={renderVideos}
+        />
+      </View>
+    );
+  }else{
+    return (
+      <View style={styles.container}>
+      </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 20,
     backgroundColor: '#d1d1d1',
     alignItems: 'center',
+    paddingTop: StatusBar.currentHeight,
   },
+
+  videoContainer: {
+    flex: 1,
+    alignItems: 'center',
+    
+},
 });

@@ -5,6 +5,17 @@ interface IProps {
     duration: string,
 }
 
+/**
+ * @param {{ 
+ * duration: string
+ * }} props 
+ * @returns
+ */
+
+/**
+ * DurationTimer is a component that displays the duration for a video.
+ * This component is passed a duration string prop for speciying the duration for the video.
+ */
 const DurationTimer = (props: IProps) => {
     const { duration } = props;
     return (

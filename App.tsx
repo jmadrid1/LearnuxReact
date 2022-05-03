@@ -4,7 +4,7 @@ import VideoRow from './components/videoRow/VideoRow';
 import { Video } from './types/Video';
 import 'firebase/database';
 import { initializeApp } from 'firebase/app';
-import { getDatabase, ref, onValue } from "firebase/database";
+import { getDatabase, ref, get, child } from "firebase/database";
 import firebaseConfig from './data_source/Firebase';
 
 export default function App() {
@@ -16,59 +16,67 @@ export default function App() {
   }, [])
 
   const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-
   const firebase_videos = 'videos';
 
-  const getVideos = () => {
-    const videoRef = ref(db, firebase_videos);
-
+  //Fetches videos from Firebase Database
+  const getVideos = async () => {
+    setLoading(true)
     let videoList: Video[] = [];
 
-    onValue(videoRef, (snapshot) => {
-      const data = snapshot.val();
-      for (const key of Object.keys(data)) {
-        const item: Video = data[key];
+    try {
+      const videoRef = ref(getDatabase())
+      get(child(videoRef, firebase_videos)).then((snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          if (data != null) {
+            for (const key of Object.keys(data)) {
+              const item: Video = data[key];
 
-        let video: Video = {
-          id: item.id,
-          title: item.title,
-          description: item.description,
-          category: item.category,
-          duration: item.duration,
-          thumbnail: item.thumbnail
+              let video: Video = {
+                id: item.id,
+                title: item.title,
+                description: item.description,
+                category: item.category,
+                duration: item.duration,
+                thumbnail: item.thumbnail
+              }
+              videoList.push(video)
+            }
+          }
+          setVideos(videoList)
         }
-        videoList.push(video)
-      }
+      }).catch((error) => {
+        console.error(error);
+      });
+      setLoading(false)
+    } catch (e) {
+      console.log(e);
       setVideos(videoList)
       setLoading(false)
-    });
+    }
   }
 
   const renderVideos = ({ item }) => {
     return (
-      <View style={styles.videoContainer} key={item.id}>
-        <VideoRow video={item} />
-      </View>
+      <VideoRow key={item.id} selectedVideo={item} />
     );
   };
 
-  if(!isLoading){
-    return (
-      <View style={styles.container}>
-        <FlatList
-          horizontal={false}
-          data={videos}
-          renderItem={renderVideos}
-        />
-      </View>
-    );
-  }else{
-    return (
-      <View style={styles.container}>
-      </View>
-    );
-  }
+  return (
+    <View style={styles.container}>
+      {!isLoading ? (
+        <View style={styles.container}>
+          <FlatList
+            horizontal={false}
+            data={videos}
+            renderItem={renderVideos}
+          />
+        </View>
+      ) : (
+        <View style={styles.container} />
+      )}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -82,6 +90,5 @@ const styles = StyleSheet.create({
   videoContainer: {
     flex: 1,
     alignItems: 'center',
-    
-},
+  },
 });

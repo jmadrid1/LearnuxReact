@@ -2,9 +2,20 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
 interface IProps {
-    category: string,
+    category: string;
 }
 
+/**
+ * @param {{ 
+ * category: string
+ * }} props 
+ * @returns
+ */
+
+/**
+ * CategoryBubble is a component that displays the category of a video in a bubble.
+ * This component is passed a category string prop for speciying the category for this component.
+ */
 const CategoryBubble = (props: IProps) => {
     const { category } = props;
     return (
@@ -32,7 +43,6 @@ const styles = StyleSheet.create({
         textTransform: 'capitalize',
         color: 'white',
     },
-
 });
 
 export default CategoryBubble;

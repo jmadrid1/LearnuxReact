@@ -5,15 +5,27 @@ import DurationTimer from '../durationTimer/DurationTimer';
 import CategoryBubble from '../categoryBubble/CategoryBubble';
 
 interface IProps {
-    video: Video,
+    selectedVideo: Video,
 }
 
-const VideoRow = (props: IProps) => {
-    const { video } = props;
+/**
+ * @param {{ 
+ * selectedVideo: Video
+ * }} props 
+ * @returns
+ */
 
+/**
+ * VideoRow is a row component that displays the information associated to a video.
+ * This screen is passed a selectedVideo Video object that React's navigation for navigating between screens and passing data.
+ */
+const VideoRow = (props: IProps) => {
+    const { selectedVideo } = props;
+
+    //Opens selected video in YouTube
     const openYouTubeVideo = () => {
         let url = 'https://www.youtube.com/watch?v='
-        let videoID: string = video.id
+        let videoID: string = selectedVideo.id
 
         let videoUrl = url + videoID
         Linking.openURL(videoUrl)
@@ -21,35 +33,23 @@ const VideoRow = (props: IProps) => {
 
     return (
         <TouchableOpacity style={styles.container} onPress={openYouTubeVideo}>
-
-            <ImageBackground style={styles.thumbnail} source={{ uri: video.thumbnail }}>
-                <DurationTimer duration={video.duration} />
+            <ImageBackground style={styles.thumbnail} source={{ uri: selectedVideo.thumbnail }}>
+                <DurationTimer duration={selectedVideo.duration} />
             </ImageBackground>
 
             <View style={styles.detailsContainer}>
-                <Text numberOfLines={1} ellipsizeMode='tail' style={styles.title}>{video.title}</Text>
-                <Text numberOfLines={4} ellipsizeMode='tail' style={styles.description}>{video.description}</Text>
+                <Text numberOfLines={1} ellipsizeMode='tail' style={styles.title}>{selectedVideo.title}</Text>
+                <Text numberOfLines={4} ellipsizeMode='tail' style={styles.description}>{selectedVideo.description}</Text>
             </View>
 
             <View style={styles.categoryContainer} >
-                <CategoryBubble category={video.category} />
+                <CategoryBubble category={selectedVideo.category} />
             </View>
-
         </TouchableOpacity>
     );
 }
 
 const styles = StyleSheet.create({
-
-    container: {
-        flexDirection: 'column',
-        height: 370,
-        width: '100%',
-        elevation: 10,
-        marginBottom: 10,
-        backgroundColor: 'white',
-    },
-
     categoryContainer: {
         flexDirection: 'row',
         flexGrow: 1,
@@ -58,6 +58,15 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
         marginRight: 15,
         marginBottom: 10,
+    },
+
+    container: {
+        flexDirection: 'column',
+        height: 370,
+        width: '100%',
+        elevation: 10,
+        marginBottom: 10,
+        backgroundColor: 'white',
     },
 
     description: {
@@ -99,7 +108,6 @@ const styles = StyleSheet.create({
         color: 'black',
         alignItems: 'flex-start',
     },
-
 });
 
 export default VideoRow;
